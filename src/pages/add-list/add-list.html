@@ -1,0 +1,67 @@
+<!--
+  Generated template for the AddListPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>addList</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <form [formGroup]="item" (ngSubmit)="addItem(item.valid, item.value)">
+    <ion-item>
+      <ion-label floating>Name</ion-label>
+      <ion-input type="text" formControlName="name"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="(item.get('name').invalid && item.get('name').touched) || (item.get('name').invalid && submitted)" color="danger">Name is required</ion-label>
+    
+
+    <ion-item>
+        <ion-label floating>Email</ion-label>
+        <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-label *ngIf="(item.get('email').invalid && item.get('email').touched) || (item.get('email').invalid && submitted)" color="danger">Email is required</ion-label>
+    
+
+    <ion-label color="primary">Gender</ion-label>
+    <ion-list radio-group formControlName="gender">
+        <ion-item>
+          <ion-label>Male</ion-label>
+          <ion-radio value="M"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Female</ion-label>
+          <ion-radio value="F"></ion-radio>
+        </ion-item>
+      </ion-list>
+    <ion-label *ngIf="(item.get('gender').invalid && item.get('gender').touched) || (item.get('gender').invalid && submitted)" color="danger">Gender is required</ion-label>
+    
+
+    <ion-label color="primary">Language known</ion-label>
+    <div *ngFor="let choice of language; let i = index">
+        <ion-item>
+          <ion-label style="white-space: normal;">{{ choice.name }}</ion-label>
+          <ion-checkbox (ionChange)="onChange(choice.id, $event.checked, i)" value="choice.id">
+          </ion-checkbox>
+        </ion-item>
+      </div>
+
+    <ion-item>
+        <ion-label>Country</ion-label>
+        <ion-select formControlName="country">
+          <ion-option *ngFor="let c of countries" value="{{c.value}}">{{ c.name }}</ion-option>
+         
+        </ion-select>
+    </ion-item>
+
+    <button ion-button block type="submit">Add List</button>
+  </form>
+
+</ion-content>
