@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database'
+import { NavController, NavParams } from 'ionic-angular';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database';
 
-import { ListItem } from '../../app/models/add-list/add-list.interface';
-import { FormGroup, FormControl, Validators, FormArray, FormBuilder } from '@angular/forms'
+import { FormGroup, FormControl, Validators, FormArray, FormBuilder } from '@angular/forms';
+
 
 
 @Component({
@@ -30,6 +30,9 @@ export class AddListPage {
     { id: 400, name: 'Hindi' }
   ];
 
+  itemKey;
+  singleItem:AngularFireObject<any>;;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, 
               public fb: FormBuilder, private database: AngularFireDatabase ) {
 
@@ -43,6 +46,26 @@ export class AddListPage {
       languages: this.fb.array([]),
       country: new FormControl('')
     });
+
+    this.itemKey = this.navParams.get('edit');
+
+    console.log(this.itemKey)
+    if(this.itemKey){
+     
+      this.singleItem = this.database.object(`add-list/${this.itemKey}`)
+
+        this.singleItem.snapshotChanges().subscribe(data=>{{
+            let item = data.payload.val();
+
+            if(item){
+              this.item.get('name').patchValue(item.name);
+              this.item.get('email').patchValue(item.email);
+              this.item.get('gender').patchValue(item.gender);
+              this.item.get('country').patchValue(item.country);
+              this.item.setControl('languages', this.fb.array(item.languages || []));
+            }
+        }});
+    }
   }
 
 
@@ -52,6 +75,18 @@ export class AddListPage {
     console.log(value, valid)
 
     if(valid){
+
+
+      if(this.itemKey){
+
+        this.database.object(`add-list/${this.itemKey}`).update(value).then(res=>{
+          console.log(res);
+        }).catch(err=>{
+          console.log(err)
+        })
+
+      }else{
+
       this.addListRef$.push({
         name: value.name,
         email: value.email,
@@ -59,6 +94,7 @@ export class AddListPage {
         country: value.country,
         languages: value.languages
       });
+    }
 
       this.item.reset();
       this.navCtrl.pop();
